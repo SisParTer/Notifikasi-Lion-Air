@@ -25,9 +25,9 @@ Sub.py : Sebagai Subscriber (Pihak Penumpang), yang akan menerima pesan notifika
 
 # Screenshoot Tampilan Aplikasi Kami
 
-Publisher :
+Publisher :  
 ![image](https://user-images.githubusercontent.com/42132479/123601943-70546980-d822-11eb-898f-356a66b920d7.png)
 
-Subscriber :
+Subscriber :  
 ![image](https://user-images.githubusercontent.com/42132479/123602241-bd384000-d822-11eb-9f15-7bc54f2a13fc.png)
 
