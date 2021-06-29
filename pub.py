@@ -19,8 +19,13 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     print("Received message: " + msg.topic + " -> " + msg.payload.decode("utf-8"))
 
+def pub(client,topic,msg,qos):
+    client.publish(topic,msg,qos)
+def sub(client,topic,qos):
+    client.subscribe(topic,qos)
+
 # create the client
-client = mqtt.Client()
+client = mqtt.Client("ClientPub",clean_session=False)
 client.on_connect = on_connect
 client.on_message = on_message
 
@@ -58,9 +63,18 @@ def cekKodePenerbangan(kode):
 # Switch Kode Kota
 def switchKodeKota(inputan):
 	switcher = {
-        '1': "Bandung",
-        '2': "Surabaya",
-        '3': "jakarta",
+        '1': "Bandung (B.Husein Sastranegara)",
+        '2': "Surabaya (B.Juanda)",
+        '3': "jakarta (B.Halim Perdanakusuma)",
+        '4': "Tanggerang (B.Soekarno-Hatta)",
+        '5': "Bali (B.Ngurah Rai)",
+        '6': "Makassar (B.Sultan Hasanuddin)",
+        '7': "Palembang (B.Sultan Mahmud Badarudin)",
+        '8': "Batam (B.Hang Nadim)",
+        '9': "Medan (B.Kualanamu)",
+        '10': "Mataram (B.Lombok)",
+        
+
     }
 	return switcher.get(inputan, "")
 
@@ -152,9 +166,9 @@ def inputJadwal():
 
 def inputJamPenerbangan():
 	clearConsole()
-
-	Jam = input("Masukan Jam Penerbangan Format 1-24 (Contoh '19' (Jam 7 Malam)) : ")
-	Menit = input("Masukan Menit Penerbangan Format 00 - 60 (Contoh '45' (Jam 7.45 Malam)) : ")
+	uICLI.header()
+	Jam = input("Masukan Jam Penerbangan Format 0-23 (Contoh '19' (Jam 7 Malam)) : ")
+	Menit = input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : ")
 	date_string = convertJam(Jam,Menit)
 	clearConsole()
 	while (cekJam(date_string) == False):
@@ -162,7 +176,7 @@ def inputJamPenerbangan():
 		uICLI.header()
 		print("Masukan Anda Salah")
 		Jam = input("Masukan Jam Penerbangan Format 00-23 (Contoh '19' (Jam 7 Malam)) : ")
-		Menit = input("Masukan Menit Penerbangan Format 00 - 60 (Contoh '45' (Jam 7.45 Malam)) : ")
+		Menit = input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : ")
 		date_string = convertJam(Jam,Menit)
 	return date_string
 
@@ -182,31 +196,19 @@ def inputPenerbangan():
 
 # Format Notifikasi yang diterima Subscirber
 def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
+	now = datetime.datetime.now()
+
 	header = 	"\n ------------------------------- Notifikasi LionAIR -------------------------------"
 	kode = 		"\n Kode Penerbangan : "+kode
 	asal = 		"\n Asal             : "+asal
 	tujuan = 	"\n Tujuan           : "+tujuan
 	jadwal = 	"\n Jadwal           : "+jadwal
 	jam = 		"\n jam              : "+jam
-	formatted = header+kode+asal+tujuan+jadwal+jam
+	created_at ="\n Pesan Dibuat	 : "+now.strftime("%d/%m/%Y %H:%M:%S")
+	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
 	return formatted
 
-# Konfirmasi Data dan Publish Data
-# def konfirmasi(input):
-# 	inputan = input("(y)/(n) : ")
-# 	if (inputan == 'n'):
-# 		KodePenerbangan = ''
-# 		Asal = ""
-# 		Tujuan = ""
-# 		inputPenerbangan()
-# 	else:
-# 		payload = formatNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal)
-# 		client.publish("my/LionAIR/Notifikasi",payload)
-
 # ----------------------------------- MAIN -----------------------------------
-
-
-
 
 KodePenerbangan, Asal, Tujuan, Jadwal, Jam = inputPenerbangan()
 uICLI.header()
@@ -226,6 +228,7 @@ if (inputan == 'n'):
 else:
 	print('Publish Notifikasi Berhasil Dikirimkan')
 	payload = formatNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
-	client.publish("my/LionAIR/Notifikasi",payload)
+	# client.publish("my/LionAIR/Notifikasi",payload,1)
+	pub(client,"my/LionAIR/Notifikasi",payload,1)
 	input('Tekan Tombol apapun untuk exit')
 
