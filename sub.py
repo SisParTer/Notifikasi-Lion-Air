@@ -1,9 +1,11 @@
 import paho.mqtt.client as mqtt
+import os
+clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print(" ----- Tersambung ----- ")
+        print(" ----- Tersambung dengan client ----- ")
     else:
         print("Error connect code : " + str(rc))
 
@@ -24,7 +26,7 @@ client.on_message = on_message
 # enable TLS
 client.tls_set(tls_version=mqtt.ssl.PROTOCOL_TLS)
 
-MyPas = "Kontol69"
+MyPas = "Kntl6969"
 MyUser = "liezarda"
 
 # set username and password
@@ -38,6 +40,8 @@ client.connect("a9643b4ed5f54c57a7c92814ab6df38a.s1.eu.hivemq.cloud", 8883)
 sub(client,"my/LionAIR/Notifikasi",1)
 
 # Blocking call that processes network traffic, dispatches callbacks and handles reconnecting.
+clearConsole()
 client.loop_forever()
+
 
 
