@@ -18,9 +18,9 @@ boarding.txt. Jika ada pesan berisi String NamaKota, maka tulis pesan tersebut k
 bernama lokasi.txt.
 
 # How To
-Jalankan Program menggunakan Terminal yang sudah terintegrasi Python 3.++
+Jalankan Program menggunakan Terminal yang sudah terintegrasi Python 3.++  
 
-Pub.py : Sebagai Publisher (Pihak Lion Air), yang akan mempublish notifikasi Transit & Boarding Pesawat
+Pub.py : Sebagai Publisher (Pihak Lion Air), yang akan mempublish notifikasi Transit & Boarding Pesawat  
 Sub.py : Sebagai Subscriber (Pihak Penumpang), yang akan menerima pesan notifikasi 
 
 # Screenshoot Tampilan Aplikasi Kami
