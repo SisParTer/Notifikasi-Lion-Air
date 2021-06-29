@@ -217,9 +217,10 @@ def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
 	asal = 		"\n Asal             : "+asal
 	tujuan = 	"\n Tujuan           : "+tujuan
 	jadwal = 	"\n Jadwal           : "+jadwal
-	jam = 		"\n jam              : "+jam
-	created_at ="\n Pesan Dibuat	  : "+now.strftime("%d/%m/%Y %H:%M:%S")
+	jam = 		"\n Jam              : "+jam
+	created_at ="\n Pesan Dibuat     : "+now.strftime("%d/%m/%Y %H:%M:%S")
 	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
+
 	return formatted
 
 # Get Pesan Notifikasi pada session sekarang
@@ -285,6 +286,5 @@ while (menuInput != '0'):
 	switchMenu(menuInput)
 	uICLI.menu()
 	menuInput = input("Silahkan Masukan Input : ")
-	input('Ok')
 print("	. . . Exit")
 sys.exit()
