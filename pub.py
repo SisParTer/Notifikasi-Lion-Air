@@ -3,7 +3,10 @@
 import paho.mqtt.client as mqtt
 import os
 import datetime
+import sys
 
+
+# Function dari Import
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
 # ----------------------------------- SETUP HIVE MQ CLOUD -----------------------------------
@@ -11,7 +14,7 @@ clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print(" ----- Tersambung ----- ")
+        print(" ----- Tersambung dengan client ----- ")
     else:
         print("Error connect code : " + str(rc))
 
@@ -32,10 +35,11 @@ client.on_message = on_message
 # enable TLS
 client.tls_set(tls_version=mqtt.ssl.PROTOCOL_TLS)
 
-MyPas = "Kontol69"
+MyPas = "Kntl6969"
+MyUser = "liezarda"
 
 # set username and password
-client.username_pw_set("liezarda", MyPas)
+client.username_pw_set(MyUser, MyPas)
 
 # connect to HiveMQ Cloud on port 8883
 client.connect("a9643b4ed5f54c57a7c92814ab6df38a.s1.eu.hivemq.cloud", 8883)
@@ -55,10 +59,18 @@ def cekAsal(Asal,Tujuan):
 
 # Fungsi untuk Cek Kode Penerbangan
 def cekKodePenerbangan(kode):
+	global kodeSession
+	message = ""
 	if ((len(kode) > 4) or (len(kode) < 4) or (kode.isnumeric() == False)):
-		return False
+		message = "Kode Penerbangan harus berjumlah 4 Digit dan Bertipe Numerik!"
+		return False,message
 	else:
-		return True
+		kodeDalem = "JT "+kode
+		if kodeDalem in kodeSession:
+			message = "Kode Penerbangan Telah Di-Notifikasikan!"
+			return False,message
+		else:
+			return True,message
 
 # Switch Kode Kota
 def switchKodeKota(inputan):
@@ -110,11 +122,13 @@ def inputKodePenerbangan():
 	uICLI.header()
 	print('Contoh : "3704" (4 Digit angka bertipe Numerik)')
 	KodePenerbangan = input("Masukan Kode Penerbangan : ")
-	while (cekKodePenerbangan(KodePenerbangan) == False):
+	status, message = cekKodePenerbangan(KodePenerbangan)
+	while (status == False):
 		print('Input Salah : ')
-		print('		Kode Penerbangan Berjumlah 4 Digit / bertipe Numerik')
+		print("\n",message)
 		print('\n')
 		KodePenerbangan = input("Masukan Kode Penerbangan : ")
+		status, message = cekKodePenerbangan(KodePenerbangan)
 	KodePenerbangan = 'JT '+KodePenerbangan
 	return KodePenerbangan
 # Input Kota Asal dan Tujuan Penerbangan
@@ -204,31 +218,73 @@ def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
 	tujuan = 	"\n Tujuan           : "+tujuan
 	jadwal = 	"\n Jadwal           : "+jadwal
 	jam = 		"\n jam              : "+jam
-	created_at ="\n Pesan Dibuat	 : "+now.strftime("%d/%m/%Y %H:%M:%S")
+	created_at ="\n Pesan Dibuat	  : "+now.strftime("%d/%m/%Y %H:%M:%S")
 	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
 	return formatted
 
+# Get Pesan Notifikasi pada session sekarang
+def getNotifikasi():
+	global payloadSession
+
+	# ----------- Kalau Make Client -----------------
+	# client = mqtt.Client("ClientSub",clean_session=False)
+	# client.tls_set(tls_version=mqtt.ssl.PROTOCOL_TLS)
+	# sub(client,"my/LionAIR/Notifikasi",1)
+	# client.loop_start()
+	# client.loop_stop()
+
+	uICLI.header()
+	print(payloadSession)
+	input(". . Ok")
+
+# Fungsi Untuk Menu di Main Program
+
+def switchMenu(inputan):
+	if inputan=='1':
+		mainProg()
+	elif inputan=='2':
+		getNotifikasi()
+	else:
+		inputan=='99'
+
+def mainProg():
+	global kodeSession
+	global payloadSession
+	KodePenerbangan, Asal, Tujuan, Jadwal, Jam = inputPenerbangan()
+	uICLI.header()
+	print('Apakah Input Anda Sudah Benar?')
+	print('Kode   : ', KodePenerbangan)
+	print('Asal   : ', Asal)
+	print('Tujuan : ', Tujuan)
+	print('Jadwal : ', Jadwal)
+	print('Pukul  : ', Jam)
+	inputan = input("(n) untuk Cancel, Enter jika sudah benar : ")
+	if (inputan == 'n'):
+		KodePenerbangan = ''
+		Asal = ""
+		Tujuan = ""
+		Jam = ""
+		print('Publish Notifikasi Dibatalkan')
+	else:
+		payload = formatNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
+		# client.publish("my/LionAIR/Notifikasi",payload,1)
+		pub(client,"my/LionAIR/Notifikasi",payload,1)
+		print("\n")
+		input('Notifikasi Berhasil Dikirimkan')
+		payloadSession = payloadSession + payload
+		kodeSession.append(KodePenerbangan)
+
 # ----------------------------------- MAIN -----------------------------------
 
-KodePenerbangan, Asal, Tujuan, Jadwal, Jam = inputPenerbangan()
-uICLI.header()
-print('Apakah Input Anda Sudah Benar?')
-print('Kode   : ', KodePenerbangan)
-print('Asal   : ', Asal)
-print('Tujuan : ', Tujuan)
-print('Jadwal : ', Jadwal)
-print('Pukul  : ', Jam)
-inputan = input("(y)/(n) : ")
-if (inputan == 'n'):
-	KodePenerbangan = ''
-	Asal = ""
-	Tujuan = ""
-	Jam = ""
-	print('Publish Notifikasi Dibatalkan')
-else:
-	print('Publish Notifikasi Berhasil Dikirimkan')
-	payload = formatNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
-	# client.publish("my/LionAIR/Notifikasi",payload,1)
-	pub(client,"my/LionAIR/Notifikasi",payload,1)
-	input('Tekan Tombol apapun untuk exit')
-
+kodeSession = [] # Bertipe Array untuk mengecek apakah Kode Penerbangan telah diinputkan
+payloadSession = ""	# Bertipe String
+clearConsole()
+uICLI.menu()
+menuInput = input("Silahkan Masukan Input : ")
+while (menuInput != '0'):
+	switchMenu(menuInput)
+	uICLI.menu()
+	menuInput = input("Silahkan Masukan Input : ")
+	input('Ok')
+print("	. . . Exit")
+sys.exit()
