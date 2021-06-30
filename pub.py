@@ -5,7 +5,6 @@ import os
 import datetime
 import sys
 
-
 # Function dari Import
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
@@ -84,17 +83,17 @@ def switchKodeKota(inputan):
         '7': "Palembang (B.Sultan Mahmud Badarudin)",
         '8': "Batam (B.Hang Nadim)",
         '9': "Medan (B.Kualanamu)",
-        '10': "Mataram (B.Lombok)",
-        
-
+        '10': "Mataram (B.Lombok)",       
     }
 	return switcher.get(inputan, "")
 
 def convertTanggal(tanggal, bulan):
-	return '2021-'+bulan+'-'+tanggal
+	d = datetime.datetime(2021, bulan, tanggal)
+	return '{:%Y-%m-%d}'.format(d)
 
 def convertJam(jam, menit):
-	return jam+':'+menit
+	j = datetime.time(jam,menit)
+	return '{:%H:%M}'.format(j)
 
 # Fungsi untuk Cek Tanggal dan bulan untuk jadwal
 def cekJadwal(date_string):
@@ -164,33 +163,33 @@ def inputJadwal():
 	clearConsole()
 	uICLI.header()
 	print('Contoh : "12" (Tanggal 12)')
-	Tanggal = str(input('Masukan Tanggal (dd) : '))
+	Tanggal = int(input('Masukan Tanggal (dd) : '))
 	print('Contoh : "10" (Bulan Oktober)')
-	Bulan = str(input('Masukan Bulan (mm) : '))
+	Bulan = int(input('Masukan Bulan (mm) : '))
 	date_string = convertTanggal(Tanggal,Bulan)
 	clearConsole()
 	while (cekJadwal(date_string) == False):
 		clearConsole()
 		uICLI.header()
 		print("Masukan Anda Salah")
-		Tanggal = str(input('Masukan Tanggal (dd) : '))
-		Bulan = str(input('Masukan Bulan (mm) : '))
+		Tanggal = int(input('Masukan Tanggal (dd) : '))
+		Bulan = int(input('Masukan Bulan (mm) : '))
 		date_string = convertTanggal(Tanggal,Bulan)
 	return date_string
 
 def inputJamPenerbangan():
 	clearConsole()
 	uICLI.header()
-	Jam = input("Masukan Jam Penerbangan Format 0-23 (Contoh '19' (Jam 7 Malam)) : ")
-	Menit = input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : ")
+	Jam = int(input("Masukan Jam Penerbangan Format 0-23 (Contoh '19' (Jam 7 Malam)) : "))
+	Menit = int(input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : "))
 	date_string = convertJam(Jam,Menit)
 	clearConsole()
 	while (cekJam(date_string) == False):
 		clearConsole()
 		uICLI.header()
 		print("Masukan Anda Salah")
-		Jam = input("Masukan Jam Penerbangan Format 00-23 (Contoh '19' (Jam 7 Malam)) : ")
-		Menit = input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : ")
+		Jam = int(input("Masukan Jam Penerbangan Format 00-23 (Contoh '19' (Jam 7 Malam)) : "))
+		Menit = int(input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : "))
 		date_string = convertJam(Jam,Menit)
 	return date_string
 
@@ -217,9 +216,10 @@ def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
 	asal = 		"\n Asal             : "+asal
 	tujuan = 	"\n Tujuan           : "+tujuan
 	jadwal = 	"\n Jadwal           : "+jadwal
-	jam = 		"\n jam              : "+jam
-	created_at ="\n Pesan Dibuat	  : "+now.strftime("%d/%m/%Y %H:%M:%S")
+	jam = 		"\n Jam              : "+jam
+	created_at ="\n Pesan Dibuat     : "+now.strftime("%d/%m/%Y %H:%M:%S")
 	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
+
 	return formatted
 
 # Get Pesan Notifikasi pada session sekarang
@@ -285,6 +285,5 @@ while (menuInput != '0'):
 	switchMenu(menuInput)
 	uICLI.menu()
 	menuInput = input("Silahkan Masukan Input : ")
-	input('Ok')
 print("	. . . Exit")
 sys.exit()

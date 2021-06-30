@@ -1,0 +1,8 @@
+
+ ------------------------------- Notifikasi LionAIR -------------------------------
+ Kode Penerbangan : JT 1234
+ Asal             : Bandung (B.Husein Sastranegara)
+ Tujuan           : Surabaya (B.Juanda)
+ Jadwal           : 2021-12-12
+ Jam              : 2:4
+ Pesan Dibuat     : 30/06/2021 14:00:31

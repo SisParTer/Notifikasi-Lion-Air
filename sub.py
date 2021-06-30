@@ -2,6 +2,8 @@ import paho.mqtt.client as mqtt
 import os
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
+import requests
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -11,7 +13,11 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
+
     print("\n Notifikasi Baru Dari LionAIR pada Topic : " + msg.topic + " -> " + msg.payload.decode("utf-8"))
+    message = msg.payload.decode("utf-8")
+    with open("boarding.txt", "w") as text_file:
+    	print(message, file=text_file)
 
 def pub(client,topic,msg,qos):
     client.publish(topic,msg,qos)
