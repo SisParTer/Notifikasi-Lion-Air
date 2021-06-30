@@ -12,7 +12,12 @@ def header():
 def footer():
 	print('------------------------------------------------------------------------------')
 
-def menu():
+
+
+# Untuk Pub
+
+
+def menuPub():
 	clearConsole()
 	header()
 	print('>>>>> Silahkan pilih Menu Aplikasi')
@@ -25,10 +30,8 @@ def menu():
 def hasilInputKode(kode):
 	print('Kode Penerbangan : ',kode)
 
-def kotaAsal():
-	clearConsole()
-	header()
-	print('>>>>> Silahkan pilih Kota Asal Pesawat')
+
+def listBandara():
 	print('	(1). Bandung (B.Husein Sastranegara)')
 	print('	(2). Surabaya (B.Juanda)')
 	print('	(3). Jakarta (B.Halim Perdanakusuma)')
@@ -39,20 +42,28 @@ def kotaAsal():
 	print('	(8). Batam (B.Hang Nadim)')
 	print('	(9). Medan (B.Kualanamu)')
 	print('	(10). Mataram (B.Lombok)')
+
+def kotaAsal():
+	clearConsole()
+	header()
+	print('>>>>> Silahkan pilih Kota Asal Pesawat')
+	listBandara()
 	footer()
 
 def kotaTujuan():
 	clearConsole()
 	header()
 	print('>>>>> Silahkan pilih Kota Tujuan Pesawat')
-	print('	(1). Bandung (B.Husein Sastranegara)')
-	print('	(2). Surabaya (B.Juanda)')
-	print('	(3). Jakarta (B.Halim Perdanakusuma)')
-	print('	(4). Tanggerang (B.Soekarno-Hatta)')
-	print('	(5). Bali (B.Ngurah Rai)')
-	print('	(6). Makassar (B.Sultan Hasanuddin)')
-	print('	(7). Palembang (B.Sultan Mahmud Badarudin)')
-	print('	(8). Batam (B.Hang Nadim)')
-	print('	(9). Medan (B.Kualanamu)')
-	print('	(10). Mataram (B.Lombok)')
+	listBandara()
+	footer()
+
+# Untuk Sub
+
+def menuSub():
+	clearConsole()
+	header()
+	print('>>>>> Silahkan pilih Menu Aplikasi')
+	print('	(1). Dapatkan Notifikasi')
+	print('	(2). Lihat Notifikasi Pada Session Ini')
+	print('	(0). Keluar')
 	footer()

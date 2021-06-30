@@ -1,0 +1,3 @@
+Kode Penerbangan :  JT 4231
+Asal Pesawat     :  Bandung (B.Husein Sastranegara)
+Tujuan Pesawat   :  Surabaya (B.Juanda)
