@@ -1,0 +1,3 @@
+Kode Penerbangan :  JT 1234
+Asal Pesawat     :  Bandung (B.Husein Sastranegara)
+Tujuan Pesawat   :  Tanggerang (B.Soekarno-Hatta)

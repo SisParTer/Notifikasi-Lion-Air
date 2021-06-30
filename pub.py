@@ -1,9 +1,9 @@
-# Library Paho.mqtt = pip install paho-mqtt
-
 import paho.mqtt.client as mqtt
 import os
 import datetime
 import sys
+import json
+import time
 
 # Function dari Import
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
@@ -49,6 +49,11 @@ client.connect("a9643b4ed5f54c57a7c92814ab6df38a.s1.eu.hivemq.cloud", 8883)
 
 import uICLI
 
+def resetConn():
+	client.disconnect()
+	client.connect("a9643b4ed5f54c57a7c92814ab6df38a.s1.eu.hivemq.cloud", 8883)
+
+
 # Fungsi untuk Cek Asal dan Tujuan Pesawat
 def cekAsal(Asal,Tujuan):
 	if ((Asal == Tujuan) or (Asal == "") or (Tujuan == "")):
@@ -58,7 +63,7 @@ def cekAsal(Asal,Tujuan):
 
 # Fungsi untuk Cek Kode Penerbangan
 def cekKodePenerbangan(kode):
-	global kodeSession
+	# global kodeSession
 	message = ""
 	if ((len(kode) > 4) or (len(kode) < 4) or (kode.isnumeric() == False)):
 		message = "Kode Penerbangan harus berjumlah 4 Digit dan Bertipe Numerik!"
@@ -70,6 +75,7 @@ def cekKodePenerbangan(kode):
 			return False,message
 		else:
 			return True,message
+	return True,message
 
 # Switch Kode Kota
 def switchKodeKota(inputan):
@@ -86,6 +92,18 @@ def switchKodeKota(inputan):
         '10': "Mataram (B.Lombok)",       
     }
 	return switcher.get(inputan, "")
+
+def cekTanggal(tanggal):
+	if (tanggal > 0) and (tanggal <= 31):
+		return True
+	else:
+		return False
+
+def cekBulan(bulan):
+	if (bulan > 0) and (bulan <= 12):
+		return True
+	else:
+		return False
 
 def convertTanggal(tanggal, bulan):
 	d = datetime.datetime(2021, bulan, tanggal)
@@ -159,13 +177,23 @@ def inputKota():
 
 # Input Jadwal Penerbangan
 def inputJadwal():
-
 	clearConsole()
 	uICLI.header()
 	print('Contoh : "12" (Tanggal 12)')
-	Tanggal = int(input('Masukan Tanggal (dd) : '))
+	Tanggal = int(input('Masukan Tanggal : '))
+	while not cekTanggal(Tanggal):
+		clearConsole()
+		uICLI.header()
+		print('Masukan Salah')
+		Tanggal = int(input('Masukan Tanggal : '))
 	print('Contoh : "10" (Bulan Oktober)')
-	Bulan = int(input('Masukan Bulan (mm) : '))
+	Bulan = int(input('Masukan Bulan : '))
+	while not cekBulan(Bulan):
+		clearConsole()
+		uICLI.header()
+		print('Masukan Salah')
+		Bulan = int(input('Masukan Bulan : '))
+	# Convert ke datetime format
 	date_string = convertTanggal(Tanggal,Bulan)
 	clearConsole()
 	while (cekJadwal(date_string) == False):
@@ -180,8 +208,8 @@ def inputJadwal():
 def inputJamPenerbangan():
 	clearConsole()
 	uICLI.header()
-	Jam = int(input("Masukan Jam Penerbangan Format 0-23 (Contoh '19' (Jam 7 Malam)) : "))
-	Menit = int(input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : "))
+	Jam = int(input("Masukan Jam Penerbangan (Format 0-23) : "))
+	Menit = int(input("Masukan Menit Penerbangan (Format 00 - 59) : "))
 	date_string = convertJam(Jam,Menit)
 	clearConsole()
 	while (cekJam(date_string) == False):
@@ -206,36 +234,32 @@ def inputPenerbangan():
 	return KodePenerbangan, Asal, Tujuan, Jadwal, Jam
 
 
-
-# Format Notifikasi yang diterima Subscirber
-def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
+def formatJsonNotifikasi(kode,asal,tujuan,jadwal,jam):
 	now = datetime.datetime.now()
 
-	header = 	"\n ------------------------------- Notifikasi LionAIR -------------------------------"
-	kode = 		"\n Kode Penerbangan : "+kode
-	asal = 		"\n Asal             : "+asal
-	tujuan = 	"\n Tujuan           : "+tujuan
-	jadwal = 	"\n Jadwal           : "+jadwal
-	jam = 		"\n Jam              : "+jam
-	created_at ="\n Pesan Dibuat     : "+now.strftime("%d/%m/%Y %H:%M:%S")
-	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
-
-	return formatted
+	jsonData = {"kode":kode,
+				 "asal":asal,
+				 "tujuan":tujuan,
+				 "jadwal":jadwal,
+				 "jam":jam,
+				 "created_at":now.strftime("%d/%m/%Y %H:%M:%S")
+				 }
+	
+	return jsonData
 
 # Get Pesan Notifikasi pada session sekarang
 def getNotifikasi():
-	global payloadSession
-
-	# ----------- Kalau Make Client -----------------
-	# client = mqtt.Client("ClientSub",clean_session=False)
-	# client.tls_set(tls_version=mqtt.ssl.PROTOCOL_TLS)
-	# sub(client,"my/LionAIR/Notifikasi",1)
-	# client.loop_start()
-	# client.loop_stop()
-
-	uICLI.header()
-	print(payloadSession)
-	input(". . Ok")
+	global arrMessageObj
+	print("Ada "+str(len(arrMessageObj))+" Notifikasi Pada Session ini ")
+	for i in arrMessageObj:
+		print("Pesan Dibuat     : ",i["created_at"])
+		print("Kode Penerbangan : ",i["kode"])
+		print("Asal Pesawat     : ",i["asal"])
+		print("Tujuan Pesawat   : ",i["tujuan"])
+		print("Jadwal           : ",i["jadwal"])
+		print("Jam              : ",i["jam"])
+		print("--------------------------------------------------------")
+	input("\nOk ...")
 
 # Fungsi Untuk Menu di Main Program
 
@@ -249,7 +273,7 @@ def switchMenu(inputan):
 
 def mainProg():
 	global kodeSession
-	global payloadSession
+	global arrMessageObj
 	KodePenerbangan, Asal, Tujuan, Jadwal, Jam = inputPenerbangan()
 	uICLI.header()
 	print('Apakah Input Anda Sudah Benar?')
@@ -266,24 +290,26 @@ def mainProg():
 		Jam = ""
 		print('Publish Notifikasi Dibatalkan')
 	else:
-		payload = formatNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
-		# client.publish("my/LionAIR/Notifikasi",payload,1)
-		pub(client,"my/LionAIR/Notifikasi",payload,1)
-		print("\n")
-		input('Notifikasi Berhasil Dikirimkan')
-		payloadSession = payloadSession + payload
+		payload = formatJsonNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
+		arrMessageObj.append(payload)
 		kodeSession.append(KodePenerbangan)
+		data_out=json.dumps(payload)
+		pub(client,"my/LionAIR/Notifikasi",data_out,1)
+		print('Notifikasi Berhasil Dikirimkan')
+		time.sleep(2)
+		
 
 # ----------------------------------- MAIN -----------------------------------
 
 kodeSession = [] # Bertipe Array untuk mengecek apakah Kode Penerbangan telah diinputkan
-payloadSession = ""	# Bertipe String
+arrMessageObj = []	# Bertipe Array Of Object
 clearConsole()
-uICLI.menu()
+uICLI.menuPub()
 menuInput = input("Silahkan Masukan Input : ")
 while (menuInput != '0'):
+	resetConn()
 	switchMenu(menuInput)
-	uICLI.menu()
+	uICLI.menuPub()
 	menuInput = input("Silahkan Masukan Input : ")
 print("	. . . Exit")
 sys.exit()

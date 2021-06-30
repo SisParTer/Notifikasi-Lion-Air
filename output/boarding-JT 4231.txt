@@ -1,0 +1,3 @@
+Kode Penerbangan :  JT 4231
+jadwal           :  2021-02-01
+jam              :  08:00
