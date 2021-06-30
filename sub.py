@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import os
+import json
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
 import requests
@@ -14,10 +15,26 @@ def on_connect(client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
 
-    print("\n Notifikasi Baru Dari LionAIR pada Topic : " + msg.topic + " -> " + msg.payload.decode("utf-8"))
-    message = msg.payload.decode("utf-8")
-    with open("boarding.txt", "w") as text_file:
-    	print(message, file=text_file)
+    print("\n>>>>> Notifikasi Baru Dari LionAIR pada Topic : " + msg.topic)
+    jsonData = msg.payload.decode("utf-8")
+    messageObj = json.loads(jsonData)
+    print("Kode Penerbangan : ",messageObj["kode"])
+    print("Asal Pesawat     : ",messageObj["asal"])
+    print("Tujuan Pesawat   : ",messageObj["tujuan"])
+    print("Jadwal           : ",messageObj["jadwal"])
+    print("Jam              : ",messageObj["jam"])
+    print("Pesan Dibuat     : ",messageObj["created_at"])
+
+    with open("boarding-"+messageObj["kode"]+".txt", "w") as text_file:
+    	print("Kode Penerbangan : ",messageObj["kode"], file=text_file)
+    	print("jadwal           : ",messageObj["jadwal"], file=text_file)
+    	print("jam              : ",messageObj["jam"], file=text_file)
+
+    with open("lokasi-"+messageObj["kode"]+".txt", "w") as text_file:
+    	print("Kode Penerbangan : ",messageObj["kode"], file=text_file)
+    	print("Asal Pesawat     : ",messageObj["asal"], file=text_file)
+    	print("Tujuan Pesawat   : ",messageObj["tujuan"], file=text_file)
+
 
 def pub(client,topic,msg,qos):
     client.publish(topic,msg,qos)

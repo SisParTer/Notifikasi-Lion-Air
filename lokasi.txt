@@ -1,0 +1,3 @@
+Kode Penerbangan :  JT 1234
+Asal Pesawat     :  Tanggerang (B.Soekarno-Hatta)
+Tujuan Pesawat   :  Palembang (B.Sultan Mahmud Badarudin)

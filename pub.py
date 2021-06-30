@@ -5,6 +5,8 @@ import os
 import datetime
 import sys
 
+import json
+
 # Function dari Import
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
@@ -87,6 +89,18 @@ def switchKodeKota(inputan):
     }
 	return switcher.get(inputan, "")
 
+def cekTanggal(tanggal):
+	if (tanggal > 0) and (tanggal <= 31):
+		return True
+	else:
+		return False
+
+def cekBulan(bulan):
+	if (bulan > 0) and (bulan <= 12):
+		return True
+	else:
+		return False
+
 def convertTanggal(tanggal, bulan):
 	d = datetime.datetime(2021, bulan, tanggal)
 	return '{:%Y-%m-%d}'.format(d)
@@ -159,13 +173,23 @@ def inputKota():
 
 # Input Jadwal Penerbangan
 def inputJadwal():
-
 	clearConsole()
 	uICLI.header()
 	print('Contoh : "12" (Tanggal 12)')
-	Tanggal = int(input('Masukan Tanggal (dd) : '))
+	Tanggal = int(input('Masukan Tanggal : '))
+	while not cekTanggal(Tanggal):
+		clearConsole()
+		uICLI.header()
+		print('Masukan Salah')
+		Tanggal = int(input('Masukan Tanggal : '))
 	print('Contoh : "10" (Bulan Oktober)')
-	Bulan = int(input('Masukan Bulan (mm) : '))
+	Bulan = int(input('Masukan Bulan : '))
+	while not cekBulan(Bulan):
+		clearConsole()
+		uICLI.header()
+		print('Masukan Salah')
+		Bulan = int(input('Masukan Bulan : '))
+	# Convert ke datetime format
 	date_string = convertTanggal(Tanggal,Bulan)
 	clearConsole()
 	while (cekJadwal(date_string) == False):
@@ -180,8 +204,8 @@ def inputJadwal():
 def inputJamPenerbangan():
 	clearConsole()
 	uICLI.header()
-	Jam = int(input("Masukan Jam Penerbangan Format 0-23 (Contoh '19' (Jam 7 Malam)) : "))
-	Menit = int(input("Masukan Menit Penerbangan Format 00 - 59 (Contoh '45' (Jam 7.45 Malam)) : "))
+	Jam = int(input("Masukan Jam Penerbangan (Format 0-23) : "))
+	Menit = int(input("Masukan Menit Penerbangan (Format 00 - 59) : "))
 	date_string = convertJam(Jam,Menit)
 	clearConsole()
 	while (cekJam(date_string) == False):
@@ -208,19 +232,31 @@ def inputPenerbangan():
 
 
 # Format Notifikasi yang diterima Subscirber
-def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
+# def formatNotifikasi(kode,asal,tujuan,jadwal, jam):
+# 	now = datetime.datetime.now()
+
+# 	header = 	"\n ------------------------------- Notifikasi LionAIR -------------------------------"
+# 	kode = 		"\n Kode Penerbangan : "+kode
+# 	asal = 		"\n Asal             : "+asal
+# 	tujuan = 	"\n Tujuan           : "+tujuan
+# 	jadwal = 	"\n Jadwal           : "+jadwal
+# 	jam = 		"\n Jam              : "+jam
+# 	created_at ="\n Pesan Dibuat     : "+now.strftime("%d/%m/%Y %H:%M:%S")
+# 	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
+# 	return formatted
+
+def formatJsonNotifikasi(kode,asal,tujuan,jadwal,jam):
 	now = datetime.datetime.now()
 
-	header = 	"\n ------------------------------- Notifikasi LionAIR -------------------------------"
-	kode = 		"\n Kode Penerbangan : "+kode
-	asal = 		"\n Asal             : "+asal
-	tujuan = 	"\n Tujuan           : "+tujuan
-	jadwal = 	"\n Jadwal           : "+jadwal
-	jam = 		"\n Jam              : "+jam
-	created_at ="\n Pesan Dibuat     : "+now.strftime("%d/%m/%Y %H:%M:%S")
-	formatted = header+kode+asal+tujuan+jadwal+jam+created_at
-
-	return formatted
+	jsonData = {"kode":kode,
+				 "asal":asal,
+				 "tujuan":tujuan,
+				 "jadwal":jadwal,
+				 "jam":jam,
+				 "created_at":now.strftime("%d/%m/%Y %H:%M:%S")
+				 }
+	data_out=json.dumps(jsonData)
+	return data_out
 
 # Get Pesan Notifikasi pada session sekarang
 def getNotifikasi():
@@ -266,7 +302,7 @@ def mainProg():
 		Jam = ""
 		print('Publish Notifikasi Dibatalkan')
 	else:
-		payload = formatNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
+		payload = formatJsonNotifikasi(KodePenerbangan,Asal,Tujuan,Jadwal,Jam)
 		# client.publish("my/LionAIR/Notifikasi",payload,1)
 		pub(client,"my/LionAIR/Notifikasi",payload,1)
 		print("\n")
