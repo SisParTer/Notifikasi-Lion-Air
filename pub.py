@@ -63,7 +63,7 @@ def cekAsal(Asal,Tujuan):
 
 # Fungsi untuk Cek Kode Penerbangan
 def cekKodePenerbangan(kode):
-	# global kodeSession
+	global kodeSession
 	message = ""
 	if ((len(kode) > 4) or (len(kode) < 4) or (kode.isnumeric() == False)):
 		message = "Kode Penerbangan harus berjumlah 4 Digit dan Bertipe Numerik!"
@@ -141,6 +141,8 @@ def inputKodePenerbangan():
 	KodePenerbangan = input("Masukan Kode Penerbangan : ")
 	status, message = cekKodePenerbangan(KodePenerbangan)
 	while (status == False):
+		clearConsole()
+		uICLI.header()
 		print('Input Salah : ')
 		print("\n",message)
 		print('\n')
