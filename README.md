@@ -26,12 +26,17 @@ Sub.py : Sebagai Subscriber (Pihak Penumpang), yang akan menerima pesan notifika
 # Screenshoot Tampilan Aplikasi Kami
 
 Publisher :  
+Menu Utama  
+![image](https://user-images.githubusercontent.com/42132479/124057238-48971880-da51-11eb-93da-cba368fc94f6.png)  
+Pemilihan Kota  
 ![image](https://user-images.githubusercontent.com/42132479/123845822-d9c99a80-d93e-11eb-8dfd-d5ebfe95e664.png)  
-
+Error Handling  
 ![image](https://user-images.githubusercontent.com/42132479/123845923-f36ae200-d93e-11eb-9a08-a0d199aa65b8.png)  
 
-![image](https://user-images.githubusercontent.com/42132479/123601943-70546980-d822-11eb-898f-356a66b920d7.png)
-
 Subscriber :  
-![image](https://user-images.githubusercontent.com/42132479/123602241-bd384000-d822-11eb-9f15-7bc54f2a13fc.png)
+Menu Utama  
+![image](https://user-images.githubusercontent.com/42132479/124057431-a9beec00-da51-11eb-94f5-3e5c57b65142.png)
+Notifikasi  
+![image](https://user-images.githubusercontent.com/42132479/124057405-99a70c80-da51-11eb-8cfc-9efd5874ec2b.png)
+
 
