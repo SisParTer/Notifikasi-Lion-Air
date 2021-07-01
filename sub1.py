@@ -58,6 +58,8 @@ def cekKode(kodePenerbangan):
 		else:
 			return False
 
+# Fungsi Publish Subscribe
+
 def pub(client,topic,msg,qos):
     client.publish(topic,msg,qos)
 def sub(client,topic,qos):
@@ -84,6 +86,9 @@ client.username_pw_set(MyUser, MyPas)
 
 # connect to HiveMQ Cloud on port 8883
 client.connect("a9643b4ed5f54c57a7c92814ab6df38a.s1.eu.hivemq.cloud", 8883)
+
+# client subscribe
+sub(client,"my/LionAIR/Notifikasi",1)
 
 def inputStop():
 	input()

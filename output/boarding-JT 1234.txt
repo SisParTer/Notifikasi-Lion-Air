@@ -1,3 +1,0 @@
-Kode Penerbangan :  JT 1234
-jadwal           :  2021-04-01
-jam              :  01:00
